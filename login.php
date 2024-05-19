@@ -27,14 +27,22 @@ if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Check if the username and password are correct
-    $sql = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+    // Check if the username exists
+    $sql = "SELECT * FROM users WHERE username = '$username'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        $_SESSION['username'] = $username; // Store the logged-in user's username in the session
-        header("Location: tropical.php");
-        exit();
+        $row = $result->fetch_assoc();
+        $hashed_password = $row['password'];
+
+        // Verify the password
+        if (password_verify($password, $hashed_password)) {
+            $_SESSION['username'] = $username; // Store the logged-in user's username in the session
+            header("Location: tropical.php");
+            exit();
+        } else {
+            $error = "Invalid username or password.";
+        }
     } else {
         $error = "Invalid username or password.";
     }
