@@ -3,6 +3,7 @@
 <head>
     <title>Tropical Fusion Delights by Concepcion</title>
     <style>
+        /* Basic styling for body and container elements */
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -27,6 +28,7 @@
         label {
             font-weight: bold;
         }
+        /* Styling for form inputs and submit button */
         input[type="number"], input[type="submit"], input[type="text"], input[type="password"], select {
             width: 100%;
             padding: 10px;
@@ -58,8 +60,11 @@
             </ul>
         </div>
         <?php
-        session_start();
+        session_start(); // Start the session to manage user login state
+
+        // Check if the user is not logged in
         if (!isset($_SESSION['username'])) {
+            // Display login form if the user is not logged in
             echo '<h3>Login or Register</h3>';
             echo '<form method="post" action="login.php">';
             echo '<label for="username">Username:</label><br>';
@@ -70,6 +75,7 @@
             echo '</form>';
             echo '<p>Don\'t have an account yet? <a href="register.php">Register</a></p>';
         } else {
+            // Display order form if the user is logged in
             echo "<h2>Welcome, {$_SESSION['username']}!</h2>";
             echo '<form method="post" action="receipt.php">';
             echo '<label for="item">Select Item:</label>';
