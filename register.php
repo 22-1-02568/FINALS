@@ -1,9 +1,7 @@
 <?php
-session_start(); // Start the session to manage user login state
+session_start();
 
-// Check if the user is already logged in
 if (isset($_SESSION['username'])) {
-    // Redirect to the main page if the user is already logged in
     header("Location: tropical.php");
     exit();
 }
@@ -14,42 +12,45 @@ $username = "root";
 $password = "";
 $dbname = "tropical";
 
-// Create a new database connection
+// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check the connection
+// Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error); // Handle connection error
+    die("Connection failed: " . $conn->connect_error);
 }
 
-$error = null; // Initialize the error variable
+$error = null;
 
-// User registration process
+// User registration
 if (isset($_POST['register'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
+    
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Check if the username already exists in the database
+    // Check if the username already exists
     $sql = "SELECT * FROM users WHERE username = '$username'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        $error = "Username already taken. Please choose a different one."; // Username already exists
+        $error = "Username already taken. Please choose a different one.";
     } else {
-        // Insert the new user into the database
-        $sql = "INSERT INTO users (username, password) VALUES ('$username', '$password')";
+        // Insert the new user into the database with the hashed password
+        $sql = "INSERT INTO users (username, password) VALUES ('$username', '$hashed_password')";
 
         if ($conn->query($sql) === TRUE) {
             $_SESSION['username'] = $username; // Store the logged-in user's username in the session
-            header("Location: tropical.php"); // Redirect to the main page
+            header("Location: tropical.php");
             exit();
         } else {
-            $error = "Error: " . $sql . "<br>" . $conn->error; // Handle query error
+            $error = "Error: " . $sql . "<br>" . $conn->error;
         }
     }
 }
 
-$conn->close(); // Close the database connection
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +61,7 @@ $conn->close(); // Close the database connection
 <body>
     <h2>Register</h2>
     <?php if (isset($error)) { ?>
-        <p style="color: red;"><?php echo $error; ?></p> <!-- Display the error message if any -->
+        <p style="color: red;"><?php echo $error; ?></p>
     <?php } ?>
     <form method="post" action="register.php">
         <label for="username">Username:</label><br>
